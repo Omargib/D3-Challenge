@@ -35,5 +35,17 @@ function buildchart(data){
     svg.append('g')
     .call(yaxis)
     .attr('transform', 'translate(' + margins.left + ', 0)')
- 
+    
+    
+    // Create Circles
+    var circlesGroup = svg.selectAll("circle")
+    .data(data)
+    .enter()
+    .append("circle")
+    .attr("cx", d => xScale(d.currentx))
+    .attr("cy", d => yScale(d.currenty))
+    .attr("r", "15")
+    .attr("fill", "pink")
+    .attr("opacity", ".5");
+            
 }
