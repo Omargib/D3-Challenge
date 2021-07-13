@@ -19,13 +19,16 @@ d3.csv("assets/data/data.csv").then(data => buildchart(data))
 
 function buildchart(data){
     var currentx = "poverty"
-    var currenty = "obesity"
+    var currenty = "healthcare"
+
     var xScale = d3.scaleLinear()
         .domain([d3.min(data, d => parseFloat(d[currentx])), d3.max(data, d => parseFloat(d[currentx]))])
         .range([0, width])
     var yScale = d3.scaleLinear()
         .domain([d3.min(data, d => parseFloat(d[currenty])), d3.max(data, d => parseFloat(d[currenty]))])
-        .range([0, height])
+        .range([height, 0])
+    
+    // Add Axis
     var xaxis = d3.axisBottom(xScale)
     var yaxis = d3.axisLeft(yScale)
     svg.append('g')
@@ -35,17 +38,48 @@ function buildchart(data){
     svg.append('g')
     .call(yaxis)
     .attr('transform', 'translate(' + margins.left + ', 0)')
-    
+        
     
     // Create Circles
     var circlesGroup = svg.selectAll("circle")
     .data(data)
     .enter()
     .append("circle")
-    .attr("cx", d => xScale(d.currentx))
-    .attr("cy", d => yScale(d.currenty))
-    .attr("r", "15")
-    .attr("fill", "pink")
-    .attr("opacity", ".5");
+        .attr("cx", d => { return xScale(d.poverty); })
+        .attr("cy", d => { return yScale(d.healthcare); })
+        .attr("r", "8")
+        .attr('class', 'stateCircle')
+        .attr("fill", "blue")
+        .atrr("opacity", ".5");
+
+    // Add circle labels
+    svg.selectAll(".text")
+        .data(data)
+        .enter() 
+        .append("text")
+            .attr("dy", "0.35em")
+            .attr("xScale", d => { return xScale(d.poverty); })
+            .attr("yScale", d => { return yScale(d.healthcare); })
+            .text(d => { return d.abbr; })
+            .attr('class', 'stateText')
+            .attr("font-size", "10px");
+    // Initialize tooltip
+    var toolTip = d3.tip()
+     .attr("class", "d3-tip")
+     .html(function(d) {
+       return  (`${d.state}<br>Poverty: ${d.poverty}<br>Healthcare: ${d.healthcare}<br>`);
+        });
+    
+    svg.call(toolTip)
+    
+    // Create listeners
+    circlesGroup.on("mouseover", function(data){
+        toolTip.show(data, this);
+    })
+    circlesGroup.on("mouseout", function(data) {
+        toolTip.hide(data, this);
+    })
+       
+
             
 }
