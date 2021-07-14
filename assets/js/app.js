@@ -44,19 +44,17 @@ function buildchart(data){
     var circlesGroup = svg.selectAll("circle")
     .data(data)
     .enter()
-    .append("circle")
+
+    circlesGroup.append("circle")
         .attr("cx", d => { return xScale(d.poverty); })
         .attr("cy", d => { return yScale(d.healthcare); })
         .attr("r", "8")
-        .attr('class', 'stateCircle')
+        .attr('class', d => {return "stateCircle" + d.abbr}) 
         .attr("fill", "blue")
-        .atrr("opacity", ".5");
+        .attr("opacity", ".5");
 
     // Add circle labels
-    svg.selectAll(".text")
-        .data(data)
-        .enter() 
-        .append("text")
+    circlesGroup.append("text")
             .attr("dy", "0.35em")
             .attr("xScale", d => { return xScale(d.poverty); })
             .attr("yScale", d => { return yScale(d.healthcare); })
@@ -79,7 +77,5 @@ function buildchart(data){
     circlesGroup.on("mouseout", function(data) {
         toolTip.hide(data, this);
     })
-       
 
-            
 }
